@@ -2,13 +2,11 @@ from address_book import AddressBook, Record
 
 book = AddressBook()
 
-# Обробка вводу.
 def parse_input(user_input):
     command, *args = user_input.split()
     command = command.strip().lower()
     return command, *args
 
-# Декоратор для обробки помилки ValueError, KeyError, IndexError.
 def input_error(func):
     def inner(*args, **kwargs):
         try:
@@ -22,7 +20,6 @@ def input_error(func):
 
     return inner
 
-# Додавання нового контакту в пам'ять.
 @input_error
 def add_contact(args):
     name, phone = args
@@ -37,14 +34,11 @@ def change_contact(args):
     book.change_phone(name, old_phone, new_phone)
     return "Contact updated."
 
-
-# Вивід у консоль номеру телефону для зазначеного контакту.
 @input_error
 def show_phone(args):
     name = args[0]
     return book.find(name)
     
-# Вивід у консоль всіх збережених контактів з номерами телефонів.
 def show_all():
     contacts = book.all()
     if not contacts:
@@ -58,17 +52,18 @@ def add_birthday(args):
     contact.add_birthday(birthday)
     return f"Birthday for {name} added."
 
+# Дата народження для вказаного контакту.
 @input_error
 def show_birthday(args):
     name = args[0]
     contact = book.find(name)
     return f"Birthday for {contact.name} is {contact.birthday}"
 
+# Дні народження, які відбудуться протягом наступного тижня.
 def show_birthdays():
     birthdays = book.get_birthdays_per_week()
     return birthdays
 
-# Основна функція зі всією логікою взаємодії з користувачем.
 def main():
     print("Welcome to the assistant bot!")
 
@@ -98,6 +93,5 @@ def main():
         else:
             print("Invalid command.")
 
-# Запуск основної функції.
 if __name__ == "__main__":
     main()

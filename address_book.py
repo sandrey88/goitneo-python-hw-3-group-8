@@ -13,13 +13,11 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, value):
-        # Реалізація валідації номера телефону.
         if not value.isdigit() or len(value) != 10:
             raise ValueError("Phone number should consist of 10 digits.")
         super().__init__(value)
 
 class Birthday(Field):
-    # Реалізація валідації формату дати народження.
     def __init__(self, value):
         try:
             datetime.strptime(value, "%d.%m.%Y")
@@ -33,15 +31,12 @@ class Record:
         self.phones = []
         self.birthday = Birthday(birthday) if birthday is not None else None
 
-    # Додавання нового номера телефону до запису.
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
 
-    # Видалення вказаного номера телефону із запису.
     def remove_phone(self, phone):
         self.phones = [p for p in self.phones if p.value != phone]
 
-    # Редагування наявного номера телефону в записі.
     def edit_phone(self, old_phone, new_phone):
         for phone in self.phones:
             if phone.value == old_phone:
@@ -49,7 +44,6 @@ class Record:
                 return
         raise ValueError("Phone not found.")
     
-    # Пошук вказаного номера телефону в записі.
     def find_phone(self, phone):
         for p in self.phones:
             if p.value == phone:
@@ -68,7 +62,6 @@ class AddressBook(UserDict):
     def __init__(self):
         self.data = {}
 
-    # Додавання запису до self.data.
     def add_record(self, record):
         self.data[record.name.value] = record
 
@@ -78,7 +71,6 @@ class AddressBook(UserDict):
             raise KeyError
         self.data[name].edit_phone(old_phone, new_phone)
 
-    # Пошук запису за ім'ям.
     def find(self, name):
         contact = self.data[name]
         if contact:
@@ -90,7 +82,6 @@ class AddressBook(UserDict):
     def all(self):
         return self.data
     
-    # Видалення запису за ім'ям.
     def delete(self, name):
         if name in self.data:
             del self.data[name]
@@ -106,30 +97,25 @@ class AddressBook(UserDict):
         for name, record in self.data.items():
             if record.birthday and record.birthday.value:
                 try:
-                    # Аналіз дати народження:
                     birthday_date = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
                     birthday_this_year = birthday_date.replace(year=today.year)
 
-                    # Оцінка дати на цей рік.
                     if birthday_this_year < today:
                         birthday_this_year = birthday_date.replace(year=today.year + 1)
 
                     delta_days = (birthday_this_year - today).days
 
-                    # Визначення дня тижня.
                     if delta_days < 7:
                         day_of_week = birthday_this_year.strftime('%A')
                         if day_of_week in ["Saturday", "Sunday"]:
                             day_of_week = "Monday"
 
-                        # Зберігаємо ім'я користувача у відповідний день тижня.
                         birthdays[day_of_week].append(record.name.value)
 
                 except ValueError:
                     print(f"Incorrect birthday format for {name}")
         
         result = []
-        # Виводимо зібрані імена по днях тижня (з понеділка по п'ятницю) у відповідному форматі.
         for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
             if birthdays[day]:
                 result.append(f"{day}: {', '.join(birthdays[day])}")
